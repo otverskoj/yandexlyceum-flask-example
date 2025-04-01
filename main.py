@@ -2,8 +2,9 @@ import datetime
 
 from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_restful import reqparse, abort, Api, Resource
 
-from data import db_session, news_api
+from data import db_session, news_api, news_resources
 from data.users import User
 from data.news import News
 from forms.news import NewsForm
@@ -12,6 +13,8 @@ from forms.user import RegisterForm, LoginForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+api = Api(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -259,6 +262,9 @@ def main():
     # orm_example()
 
     app.register_blueprint(news_api.blueprint)
+
+    api.add_resource(news_resources.NewsListResource, '/api/v2/news')
+    api.add_resource(news_resources.NewsResource, '/api/v2/news/<int:news_id>')
 
     app.run()
 
